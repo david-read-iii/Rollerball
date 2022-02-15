@@ -14,6 +14,12 @@ import android.os.Bundle;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     /**
+     * Int constant representing the threshold at which an accelerometer magnitude difference should
+     * be considered a device shake.
+     */
+    private final int SHAKE_THRESHOLD = 100;
+
+    /**
      * {@link SensorManager} for accessing the device's sensors.
      */
     private SensorManager mSensorManager;
@@ -27,6 +33,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * {@link RollerSurfaceView} to display the UI of the Rollergame.
      */
     private RollerSurfaceView mSurfaceView;
+
+    /**
+     * Float holding the last reported accelerometer magnitude.
+     */
+    private float mLastAcceleration = SensorManager.GRAVITY_EARTH;
 
     /**
      * Invoked once when {@link MainActivity} is initially created. It simply initializes member
@@ -66,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     /**
      * Invoked when a new sensor event occurs. It notifies {@link #mSurfaceView} of the new
-     * accelerometer values.
+     * accelerometer values and device shakes.
      *
      * @param sensorEvent The {@link SensorEvent} that occurred.
      */
@@ -80,6 +91,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // Move the ball.
         mSurfaceView.changeAcceleration(x, y);
+
+        // Find magnitude of acceleration.
+        float currentAcceleration = x * x + y * y + z * z;
+
+        // Calculate difference between 2 readings.
+        float delta = currentAcceleration - mLastAcceleration;
+
+        // Save for next time.
+        mLastAcceleration = currentAcceleration;
+
+        // Detect shake.
+        if (Math.abs(delta) > SHAKE_THRESHOLD) {
+            mSurfaceView.shake();
+        }
     }
 
     /**
