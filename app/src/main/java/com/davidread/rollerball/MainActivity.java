@@ -9,7 +9,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 
 /**
- *
+ * {@link MainActivity} represents a user interface that allows the user to play a Rollerball game.
  */
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
